@@ -88,10 +88,11 @@ resource librechatConfig_fileShare 'Microsoft.Storage/storageAccounts/fileServic
   }
 }
 
-var rawLibrechatConfig = loadTextContent('../librechat.yaml')
+var rawLibrechatConfig = loadTextContent('./librechat.yaml')
 var updatedLibrechatConfig = replace(replace(rawLibrechatConfig,
-    'openai-key', openAiService.listKeys().key1),
-    'openai-instance-name', openAiService.name)
+    'BICEP_GENERATED_API_KEY', openAiService.listKeys().key1),
+    'BICEP_GENERATED_INSTANCE_NAME', openAiService.name)
+var librechatFqdn = 'librechat-${appSuffix}.${containerAppEnvironment.properties.defaultDomain}'
 
 // Upload librechat.yaml to librechat-config file share
 resource uploadLibrechatConfig_deploymentScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
@@ -416,7 +417,7 @@ resource librechat_containerApp 'Microsoft.App/containerApps@2023-08-01-preview'
       containers: [
         {
           name: 'librechat-${appSuffix}'
-          image: 'librechat/librechat:v0.7.3-rc'
+          image: 'librechat/librechat:v0.7.5'
           resources: {
             cpu: json('1.0')
             memory: '2Gi'
@@ -436,11 +437,11 @@ resource librechat_containerApp 'Microsoft.App/containerApps@2023-08-01-preview'
             }
             {
               name: 'DOMAIN_CLIENT'
-              value: 'http://localhost:3080'
+              value: 'https://${librechatFqdn}'
             }
             {
               name: 'DOMAIN_SERVER'
-              value: 'http://localhost:3080'
+              value: 'https://${librechatFqdn}'
             }
             {
               name: 'DEBUG_LOGGING'
@@ -497,6 +498,22 @@ resource librechat_containerApp 'Microsoft.App/containerApps@2023-08-01-preview'
             {
               name: 'CUSTOM_FOOTER'
               value: 'ChatGPT can make mistakes. Check important info.'
+            }
+            {
+              name: 'AZURE_API_KEY'
+              value: openAiService.listKeys().key1
+            }
+            {
+              name: 'AZURE_OPENAI_API_INSTANCE_NAME'
+              value: openAiService.name
+            }
+            {
+              name: 'CONFIG_PATH'
+              value: '/app/config-env/librechat.yaml'
+            }
+            {
+              name: 'AZURE_OPENAI_API_VERSION'
+              value: '2023-05-15' // Of de meest recente versie
             }
           ]
           volumeMounts: [

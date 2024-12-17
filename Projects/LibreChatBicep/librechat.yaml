@@ -1,0 +1,17 @@
+version: 1.1.5
+cache: true
+endpoints:
+  azureOpenAI:
+    groups:
+    - group: "openai"
+      apiKey: "BICEP_GENERATED_API_KEY"
+      instanceName: "BICEP_GENERATED_INSTANCE_NAME"
+      forcePrompt: false
+      assistants: true
+      models:
+        gpt-4-turbo:
+          deploymentName: gpt-4-turbo
+          version: "2024-02-15-preview"
+        gpt-3.5-turbo-16k:
+          deploymentName: gpt-35-turbo-16k
+          version: "2024-02-15-preview"

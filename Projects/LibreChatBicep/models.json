@@ -10,7 +10,7 @@
       "deploymentName": "gpt-35-turbo-16k",
       "modelName": "gpt-35-turbo-16k",
       "version": "0613",
-      "capacity": 150
+      "capacity": 30
     }
   ]
 }
